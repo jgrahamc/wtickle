@@ -43,11 +43,8 @@ func worker(wg *sync.WaitGroup, work chan string,
 }
 
 // Fill in this function to return true if there's some exception
-// that the program should be looking for
-func exception(resp *http.Response) bool {
-
-	// TODO
-	
+// that the program should be looking for.
+func exception(resp *http.Response, tolog *[]string) bool {
 	return false
 }
 
@@ -69,9 +66,8 @@ func reader(result chan responseWithError, log *os.File) {
 		case re.err != nil:
 			output = "e"
 			tolog = append(tolog, fmt.Sprintf("Error %s", re.err))
-		case exception(re.resp):
+		case exception(re.resp, &tolog):
 			output = "E"
-			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		case re.resp.StatusCode == http.StatusOK:
 			output = "."
 			tolog = append(tolog, fmt.Sprintf("%s", re.resp.Status))
