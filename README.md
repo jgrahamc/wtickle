@@ -33,7 +33,7 @@ hits them.
 
 * `e` some internal error in the program
 
-* `3` 3xx error from the server
+* `3` 3xx response from the server
 
 * `4` 4xx error from the server
 
