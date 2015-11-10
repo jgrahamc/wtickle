@@ -39,6 +39,14 @@ hits them.
 
 * `5` 5xx error from the server
 
+* `E` See `func exception` below
 
 
+# `func exception`
+
+This function can be filled in to perform arbitrary processing on the
+HTTP response. If it returns true then an exception is logged.
+
+For example, this could be used to look for specific HTTP headers or
+examine the response body.
 

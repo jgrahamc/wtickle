@@ -66,12 +66,12 @@ func reader(result chan responseWithError, log *os.File) {
 		tolog := []string{re.resp.Request.URL.String()}
 
 		switch {
-		case exception(re):
-			output = "E"
-			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		case re.err != nil:
 			output = "e"
 			tolog = append(tolog, fmt.Sprintf("Error %s", re.err))
+		case exception(re):
+			output = "E"
+			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		case re.resp.StatusCode == http.StatusOK:
 			output = "."
 			tolog = append(tolog, fmt.Sprintf("%s", re.resp.Status))
