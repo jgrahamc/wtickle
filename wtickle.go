@@ -42,6 +42,15 @@ func worker(wg *sync.WaitGroup, work chan string,
 	wg.Done()
 }
 
+// Fill in this function to return true if there's some exception
+// that the program should be looking for
+func exception(re responseWithError) bool {
+
+	// TODO
+	
+	return false
+}
+
 // Just reads from the result channel and outputs values and writes
 // the log
 func reader(result chan responseWithError, log *os.File) {
@@ -57,6 +66,9 @@ func reader(result chan responseWithError, log *os.File) {
 		tolog := []string{re.resp.Request.URL.String()}
 
 		switch {
+		case exception(re):
+			output = "E"
+			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		case re.err != nil:
 			output = "e"
 			tolog = append(tolog, fmt.Sprintf("Error %s", re.err))
@@ -71,6 +83,7 @@ func reader(result chan responseWithError, log *os.File) {
 			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		}
 		re.resp.Body.Close()
+		
 		fmt.Print(output)
 		if log != nil {
 			tolog = append(tolog, "", "")
