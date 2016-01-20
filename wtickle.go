@@ -19,6 +19,7 @@ var client http.Client
 
 type responseWithError struct {
 	resp *http.Response
+	dur  time.Duration
 	err  error
 }
 
@@ -35,8 +36,10 @@ func worker(wg *sync.WaitGroup, work chan string,
 		if hdr != "" {
 			request.Header.Add(hdr, val)
 		}
+		mark := time.Now()
 		resp, err := client.Do(request)
-		result <- responseWithError{resp, err}
+		dur := time.Since(mark)
+		result <- responseWithError{resp, dur, err}
 	}
 
 	wg.Done()
@@ -60,7 +63,7 @@ func reader(result chan responseWithError, log *os.File) {
 		// First character of status code (e.g. 3, 4, 5)
 
 		output := ""
-		tolog := []string{re.resp.Request.URL.String()}
+		tolog := []string{re.resp.Request.URL.String(), fmt.Sprintf("Duration: %s", re.dur)}
 
 		switch {
 		case re.err != nil:
@@ -79,7 +82,7 @@ func reader(result chan responseWithError, log *os.File) {
 			tolog = append(tolog, fmt.Sprintf("%s", re.resp))
 		}
 		re.resp.Body.Close()
-		
+
 		fmt.Print(output)
 		if log != nil {
 			tolog = append(tolog, "", "")
